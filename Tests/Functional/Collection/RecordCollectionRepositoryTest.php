@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace FriendsOfTYPO3\LegacyCollections\Tests\Functional\Collection;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
 use FriendsOfTYPO3\LegacyCollections\Collection\RecordCollectionRepository;
@@ -31,8 +32,12 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
  */
 class RecordCollectionRepositoryTest extends FunctionalTestCase
 {
+    protected array $testExtensionsToLoad = [
+        'typo3conf/ext/legacy_collections',
+    ];
+
     /**
-     * @var RecordCollectionRepository|\PHPUnit\Framework\MockObject\MockObject
+     * @var RecordCollectionRepository|MockObject
      */
     protected $subject;
 
@@ -49,7 +54,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         parent::setUp();
 
         $this->subject = $this->getMockBuilder(RecordCollectionRepository::class)
-            ->setMethods(['getEnvironmentMode'])
+            ->onlyMethods(['getEnvironmentMode'])
             ->getMock();
         $this->testTableName = StringUtility::getUniqueId('tx_testtable');
     }
@@ -66,7 +71,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByTypeReturnNull()
+    public function doesFindByTypeReturnNull(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
         $objects = $this->subject->findByType($type);
@@ -76,7 +81,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByTypeReturnObjects()
+    public function doesFindByTypeReturnObjects(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
         $this->insertTestData([
@@ -93,7 +98,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByTableNameReturnNull()
+    public function doesFindByTableNameReturnNull(): void
     {
         $objects = $this->subject->findByTableName($this->testTableName);
         self::assertNull($objects);
@@ -102,7 +107,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByTableNameReturnObjects()
+    public function doesFindByTableNameReturnObjects(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
         $this->insertTestData([
@@ -119,7 +124,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByTypeAndTableNameReturnNull()
+    public function doesFindByTypeAndTableNameReturnNull(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
         $objects = $this->subject->findByTypeAndTableName($type, $this->testTableName);
@@ -130,7 +135,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByTypeAndTableNameReturnObjects()
+    public function doesFindByTypeAndTableNameReturnObjects(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
         $this->insertTestData([
@@ -147,7 +152,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByUidReturnAnObjectInBackendMode()
+    public function doesFindByUidReturnAnObjectInBackendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('BE');
         $type = RecordCollectionRepository::TYPE_Static;
@@ -170,7 +175,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByUidRespectDeletedFieldInBackendMode()
+    public function doesFindByUidRespectDeletedFieldInBackendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('BE');
         $type = RecordCollectionRepository::TYPE_Static;
@@ -193,7 +198,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByUidIgnoreOtherEnableFieldsInBackendMode()
+    public function doesFindByUidIgnoreOtherEnableFieldsInBackendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('BE');
         $type = RecordCollectionRepository::TYPE_Static;
@@ -229,7 +234,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByUidReturnAnObjectInFrontendMode()
+    public function doesFindByUidReturnAnObjectInFrontendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('FE');
         $type = RecordCollectionRepository::TYPE_Static;
@@ -252,7 +257,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function doesFindByUidRespectEnableFieldsInFrontendMode()
+    public function doesFindByUidRespectEnableFieldsInFrontendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('FE');
         $type = RecordCollectionRepository::TYPE_Static;

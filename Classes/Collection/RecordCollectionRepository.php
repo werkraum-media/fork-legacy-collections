@@ -17,6 +17,8 @@ declare(strict_types=1);
 
 namespace FriendsOfTYPO3\LegacyCollections\Collection;
 
+use TYPO3\CMS\Core\Collection\AbstractRecordCollection;
+use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\DeletedRestriction;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
@@ -54,7 +56,7 @@ class RecordCollectionRepository
      * Finds a record collection by uid.
      *
      * @param int $uid The uid to be looked up
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection|null
+     * @return AbstractRecordCollection|null
      */
     public function findByUid($uid)
     {
@@ -70,9 +72,7 @@ class RecordCollectionRepository
         }
 
         $data = $queryBuilder->select('*')
-            ->from($this->table)
-            ->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)))
-            ->execute()
+            ->from($this->table)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)))->executeQuery()
             ->fetch();
         if (is_array($data)) {
             $result = $this->createDomainObject($data);
@@ -83,7 +83,7 @@ class RecordCollectionRepository
     /**
      * Finds all record collections.
      *
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection[]|null
+     * @return AbstractRecordCollection[]|null
      */
     public function findAll()
     {
@@ -94,7 +94,7 @@ class RecordCollectionRepository
      * Finds record collections by table name.
      *
      * @param string $tableName Name of the table to be looked up
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection[]
+     * @return AbstractRecordCollection[]
      */
     public function findByTableName($tableName)
     {
@@ -111,7 +111,7 @@ class RecordCollectionRepository
      * Finds record collection by type.
      *
      * @param string $type Type to be looked up
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection[]|null
+     * @return AbstractRecordCollection[]|null
      */
     public function findByType($type)
     {
@@ -129,7 +129,7 @@ class RecordCollectionRepository
      *
      * @param string $type Type to be looked up
      * @param string $tableName Name of the table to be looked up
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection[]|null
+     * @return AbstractRecordCollection[]|null
      */
     public function findByTypeAndTableName($type, $tableName)
     {
@@ -154,7 +154,7 @@ class RecordCollectionRepository
             ->getConnectionForTable($this->table)
             ->update(
                 $this->table,
-                ['deleted' => 1, 'tstamp' => (int)$GLOBALS['EXEC_TIME']],
+                ['deleted' => 1, 'tstamp' => (int)GeneralUtility::makeInstance(Context::class)->getPropertyFromAspect('date', 'timestamp')],
                 ['uid' => (int)$uid]
             );
     }
@@ -163,7 +163,7 @@ class RecordCollectionRepository
      * Queries for multiple records for the given conditions.
      *
      * @param array $conditions Conditions concatenated with AND for query
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection[]|null
+     * @return AbstractRecordCollection[]|null
      */
     protected function queryMultipleRecords(array $conditions = [])
     {
@@ -181,7 +181,7 @@ class RecordCollectionRepository
             $queryBuilder->where(...$conditions);
         }
 
-        $data = $queryBuilder->execute()->fetchAll();
+        $data = $queryBuilder->executeQuery()->fetchAll();
         if (!empty($data)) {
             $result = $this->createMultipleDomainObjects($data);
         }
@@ -193,7 +193,7 @@ class RecordCollectionRepository
      * Creates a record collection domain object.
      *
      * @param array $record Database record to be reconstituted
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection
+     * @return AbstractRecordCollection
      * @throws \RuntimeException
      */
     protected function createDomainObject(array $record)
@@ -212,7 +212,7 @@ class RecordCollectionRepository
      * Creates multiple record collection domain objects.
      *
      * @param array $data Array of multiple database records to be reconstituted
-     * @return \TYPO3\CMS\Core\Collection\AbstractRecordCollection[]
+     * @return AbstractRecordCollection[]
      */
     protected function createMultipleDomainObjects(array $data)
     {

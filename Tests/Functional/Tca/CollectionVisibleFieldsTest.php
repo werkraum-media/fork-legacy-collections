@@ -18,12 +18,16 @@ declare(strict_types=1);
 namespace FriendsOfTYPO3\LegacyCollections\Tests\Functional\Tca;
 
 use TYPO3\CMS\Backend\Tests\Functional\Form\FormTestService;
-use TYPO3\CMS\Core\Localization\LanguageService;
+use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 
 class CollectionVisibleFieldsTest extends FunctionalTestCase
 {
+    protected array $testExtensionsToLoad = [
+        'typo3conf/ext/legacy_collections',
+    ];
+
     protected static $collectionFields = [
         'title',
         'sys_language_uid',
@@ -39,12 +43,13 @@ class CollectionVisibleFieldsTest extends FunctionalTestCase
     /**
      * @test
      */
-    public function collectionFormContainsExpectedFields()
+    public function collectionFormContainsExpectedFields(): void
     {
-        $this->setUpBackendUserFromFixture(1);
-        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageService::class);
+        $this->importCSVDataSet(__DIR__ . '/../Fixtures/BackendUser.csv');
+        $this->setUpBackendUser(1);
+        $GLOBALS['LANG'] = GeneralUtility::makeInstance(LanguageServiceFactory::class)->create('en_EN');
 
-        $formEngineTestService = GeneralUtility::makeInstance(FormTestService::class);
+        $formEngineTestService = new FormTestService();
         $formResult = $formEngineTestService->createNewRecordForm('sys_collection');
 
         foreach (static::$collectionFields as $expectedField) {

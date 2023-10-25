@@ -194,7 +194,7 @@ class StaticRecordCollection extends AbstractRecordCollection implements Editabl
                 )
             )
             ->orderBy('sys_collection_entries.sorting')
-            ->execute();
+            ->executeQuery();
         $relatedRecords = [];
         while ($record = $statement->fetch()) {
             $relatedRecords[] = $record;
