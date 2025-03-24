@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace FriendsOfTYPO3\LegacyCollections\Tests\Functional\Collection;
 
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use Doctrine\DBAL\DBALException;
 use Doctrine\DBAL\Platforms\SQLServerPlatform;
@@ -33,7 +34,7 @@ use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
 class RecordCollectionRepositoryTest extends FunctionalTestCase
 {
     protected array $testExtensionsToLoad = [
-        'typo3conf/ext/legacy_collections',
+        'friendsoftypo3/legacy-collections',
     ];
 
     /**
@@ -41,10 +42,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
      */
     protected $subject;
 
-    /**
-     * @var string
-     */
-    protected $testTableName;
+    protected string $testTableName;
 
     /**
      * Sets up this test case.
@@ -68,9 +66,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
             ->truncate('sys_collection');
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByTypeReturnNull(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
@@ -78,9 +74,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertNull($objects);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByTypeReturnObjects(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
@@ -95,18 +89,14 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertInstanceOf(StaticRecordCollection::class, $objects[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByTableNameReturnNull(): void
     {
         $objects = $this->subject->findByTableName($this->testTableName);
         self::assertNull($objects);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByTableNameReturnObjects(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
@@ -121,9 +111,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertInstanceOf(StaticRecordCollection::class, $objects[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByTypeAndTableNameReturnNull(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
@@ -132,9 +120,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertNull($objects);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByTypeAndTableNameReturnObjects(): void
     {
         $type = RecordCollectionRepository::TYPE_Static;
@@ -149,9 +135,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertInstanceOf(StaticRecordCollection::class, $objects[1]);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByUidReturnAnObjectInBackendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('BE');
@@ -172,9 +156,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertInstanceOf(StaticRecordCollection::class, $object);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByUidRespectDeletedFieldInBackendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('BE');
@@ -195,9 +177,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertNull($object);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByUidIgnoreOtherEnableFieldsInBackendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('BE');
@@ -231,9 +211,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertInstanceOf(StaticRecordCollection::class, $expiredObject);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByUidReturnAnObjectInFrontendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('FE');
@@ -254,9 +232,7 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
         self::assertInstanceOf(StaticRecordCollection::class, $object);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function doesFindByUidRespectEnableFieldsInFrontendMode(): void
     {
         $this->subject->method('getEnvironmentMode')->willReturn('FE');
@@ -306,35 +282,9 @@ class RecordCollectionRepositoryTest extends FunctionalTestCase
     protected function insertTestData(array $rows)
     {
         $connection = GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable('sys_collection');
-        $platform = $connection->getDatabasePlatform();
-        $sqlServerIdentityDisabled = false;
-        if ($platform instanceof SQLServerPlatform) {
-            try {
-                $connection->exec('SET IDENTITY_INSERT sys_collection ON');
-                $sqlServerIdentityDisabled = true;
-            } catch (DBALException $e) {
-                // Some tables like sys_refindex don't have an auto-increment uid field and thus no
-                // IDENTITY column. Instead of testing existence, we just try to set IDENTITY ON
-                // and catch the possible error that occurs.
-            }
-        }
-
-        $types = [];
-        $tableDetails = $connection->getSchemaManager()->listTableDetails('sys_collection');
-        foreach ($rows as $row) {
-            foreach ($row as $columnName => $columnValue) {
-                $types[] = $tableDetails->getColumn($columnName)->getType()->getBindingType();
-            }
-            break;
-        }
 
         foreach ($rows as $row) {
-            $connection->insert('sys_collection', $row, $types);
-        }
-
-        if ($sqlServerIdentityDisabled) {
-            // Reset identity if it has been changed
-            $connection->exec('SET IDENTITY_INSERT sys_collection OFF');
+            $connection->insert('sys_collection', $row);
         }
     }
 }

@@ -17,7 +17,8 @@ declare(strict_types=1);
 
 namespace FriendsOfTYPO3\LegacyCollections\Tests\Functional\Tca;
 
-use TYPO3\CMS\Backend\Tests\Functional\Form\FormTestService;
+use PHPUnit\Framework\Attributes\Test;
+use FriendsOfTYPO3\LegacyCollections\Tests\Functional\FormTestService;
 use TYPO3\CMS\Core\Localization\LanguageServiceFactory;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\TestingFramework\Core\Functional\FunctionalTestCase;
@@ -40,9 +41,7 @@ class CollectionVisibleFieldsTest extends FunctionalTestCase
         'endtime',
     ];
 
-    /**
-     * @test
-     */
+    #[Test]
     public function collectionFormContainsExpectedFields(): void
     {
         $this->importCSVDataSet(__DIR__ . '/../Fixtures/BackendUser.csv');

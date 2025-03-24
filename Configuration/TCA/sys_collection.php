@@ -119,7 +119,6 @@ return [
                 'prepend_tname' => true,
                 'allowed' => '*',
                 'MM' => 'sys_collection_entries',
-                'MM_hasUidField' => true,
                 'multiple' => true,
                 'size' => 5
             ]

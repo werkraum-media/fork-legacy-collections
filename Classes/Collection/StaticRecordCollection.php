@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace FriendsOfTYPO3\LegacyCollections\Collection;
 
+use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Collection\AbstractRecordCollection;
 use TYPO3\CMS\Core\Collection\CollectionInterface;
 use TYPO3\CMS\Core\Collection\EditableCollectionInterface;
@@ -190,13 +191,13 @@ class StaticRecordCollection extends AbstractRecordCollection implements Editabl
             ->where(
                 $queryBuilder->expr()->eq(
                     self::getCollectionDatabaseTable() . '.uid',
-                    $queryBuilder->createNamedParameter($this->getIdentifier(), \PDO::PARAM_INT)
+                    $queryBuilder->createNamedParameter($this->getIdentifier(), ParameterType::INTEGER)
                 )
             )
             ->orderBy('sys_collection_entries.sorting')
             ->executeQuery();
         $relatedRecords = [];
-        while ($record = $statement->fetch()) {
+        while ($record = $statement->fetchAssociative()) {
             $relatedRecords[] = $record;
         }
         return $relatedRecords;
