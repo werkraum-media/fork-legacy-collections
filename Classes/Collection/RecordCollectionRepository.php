@@ -17,6 +17,7 @@ declare(strict_types=1);
 
 namespace FriendsOfTYPO3\LegacyCollections\Collection;
 
+use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Collection\AbstractRecordCollection;
 use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -72,8 +73,8 @@ class RecordCollectionRepository
         }
 
         $data = $queryBuilder->select('*')
-            ->from($this->table)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, \PDO::PARAM_INT)))->executeQuery()
-            ->fetch();
+            ->from($this->table)->where($queryBuilder->expr()->eq('uid', $queryBuilder->createNamedParameter($uid, ParameterType::INTEGER)))->executeQuery()
+            ->fetchAssociative();
         if (is_array($data)) {
             $result = $this->createDomainObject($data);
         }
@@ -181,7 +182,7 @@ class RecordCollectionRepository
             $queryBuilder->where(...$conditions);
         }
 
-        $data = $queryBuilder->executeQuery()->fetchAll();
+        $data = $queryBuilder->executeQuery()->fetchAllAssociative();
         if (!empty($data)) {
             $result = $this->createMultipleDomainObjects($data);
         }

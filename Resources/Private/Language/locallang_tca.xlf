@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xliff version="1.0" xmlns:t3="http://typo3.org/schemas/xliff">
-	<file t3:id="1596184914" source-language="en" datatype="plaintext" original="EXT:legacy_collections/Resources/Private/Language/locallang_tca.xlf" date="2020-07-31T08:22:34Z" product-name="legacy_collections">
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+	<file source-language="en" original="en" datatype="plaintext" date="2020-07-31T08:22:34Z" product-name="legacy_collections">
 		<header/>
 		<body>
 			<trans-unit id="sys_collection" resname="sys_collection">
